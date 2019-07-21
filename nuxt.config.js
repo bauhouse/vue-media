@@ -1,3 +1,6 @@
+import articles from './content/articles.js'
+const baseUrl = 'https://designinfluences.com';
+
 export default {
   mode: 'universal',
   /*
@@ -27,6 +30,23 @@ export default {
     'bulma',
     '~assets/css/main.scss'
   ],
+  build: {
+    extend (config) {
+      const rule = config.module.rules.find(r => r.test.toString() === '/\\.(png|jpe?g|gif|svg|webp)$/i')
+      config.module.rules.splice(config.module.rules.indexOf(rule), 1)
+
+      config.module.rules.push({
+        test: /\.md$/,
+        loader: 'frontmatter-markdown-loader',
+        include: path.resolve(__dirname, 'contents'),
+        options: {
+          vue: {
+            root: "dynamicMarkdown"
+          }
+        }
+      });
+    }
+  },
   /*
    ** Plugins to load before mounting the App
    */
@@ -55,5 +75,9 @@ export default {
      ** You can extend webpack config here
      */
     extend(config, ctx) {}
+  },
+  generate: {
+    routes: []
+    .concat(articles.map(w => `/journal/${w}`))
   }
 }
